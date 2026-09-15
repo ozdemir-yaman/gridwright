@@ -1,0 +1,598 @@
+/* =========================================================================
+   Gridwright — Drawing App styles
+   Consumes tokens.css. Base resets live in tokens.css; this file adds
+   only app-specific chrome.
+   ========================================================================= */
+
+/* App shell: fullscreen, no scroll. */
+html,
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Ensure the HTML `hidden` attribute always hides, even for elements with
+   an explicit display value like flex/grid. */
+[hidden] {
+    display: none !important;
+}
+
+#canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* ---- Grid pattern ---- */
+#grid-pattern .grid-cell {
+    fill: none;
+    stroke: var(--color-grid-major);
+    stroke-width: 1;
+}
+
+#grid-pattern .grid-diag {
+    fill: none;
+    stroke: var(--color-grid-minor);
+    stroke-width: 1;
+}
+
+/* World boundary — a thin dark rectangle that frames the 800x450 play area. */
+#world-bounds {
+    fill: none;
+    stroke: var(--color-text);
+    stroke-width: 2;
+    stroke-opacity: 0.4;
+    pointer-events: none;
+    vector-effect: non-scaling-stroke;
+}
+
+/* ---- Hidden inputs ---- */
+.hidden-picker {
+    display: none;
+}
+
+/* ---- Home chip (floating top-right) ---- */
+/* ---- Top-right toolbar (Home / Save / Export) ---- */
+/* Mirrors the left toolbar's chrome: rounded panel with icon buttons.
+   Anchored to top-right instead of top-left, laid out horizontally. */
+.top-toolbar {
+    position: fixed;
+    top: var(--space-5);
+    right: var(--space-5);
+    z-index: var(--z-chip);
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-3);
+    background: var(--color-surface);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.top-toolbar-btn {
+    background: var(--color-surface-alt);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    width: 44px;
+    height: 44px;
+    font-size: var(--fs-lg);
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text);
+    text-decoration: none;
+    padding: 0;
+    transition: background var(--dur-fast) var(--ease),
+                border-color var(--dur-fast) var(--ease),
+                color var(--dur-fast) var(--ease);
+}
+
+.top-toolbar-btn:hover,
+.top-toolbar-btn:focus-visible {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    outline: none;
+}
+
+/* Screen-reader-only label for icon-only buttons. */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ---- Toolbar ---- */
+#toolbar {
+    position: absolute;
+    top: var(--space-5);
+    left: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    background: var(--color-surface);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    z-index: var(--z-toolbar);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.tool-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.toolbar-divider {
+    border: 0;
+    border-top: 1px solid var(--color-surface-hover);
+    margin: 0;
+    width: 100%;
+}
+
+.tool-btn,
+.panel-toggle-btn {
+    background: var(--color-surface-alt);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    width: 44px;
+    height: 48px;
+    font-size: var(--fs-lg);
+    cursor: pointer;
+    transition: all var(--dur-med) var(--ease);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    position: relative;
+}
+
+/* ---- Keyboard shortcut hint badges ----
+   Visible only while body.show-shortcuts is set (user is holding Alt).
+   Rendered as a small dark chip pinned to the right of each button that
+   declares a data-shortcut attribute. */
+[data-shortcut]::after {
+    content: attr(data-shortcut);
+    position: absolute;
+    left: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1a1a1a;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 4px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease);
+    z-index: var(--z-tooltip, 9999);
+}
+body.show-shortcuts [data-shortcut]::after {
+    opacity: 1;
+}
+/* Action bar buttons are horizontal — badge above works better there. */
+.selection-actions [data-shortcut]::after {
+    left: 50%;
+    top: auto;
+    bottom: calc(100% + 6px);
+    transform: translateX(-50%);
+}
+
+.tool-btn:hover,
+.panel-toggle-btn:hover {
+    background: var(--color-surface-hover);
+}
+
+.tool-btn.active,
+.panel-toggle-btn.active {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent);
+}
+
+.color-indicator {
+    display: block;
+    width: 16px;
+    height: 4px;
+    border-radius: 2px;
+}
+
+.tool-icon {
+    color: var(--color-text);
+    display: block;
+}
+
+.tool-btn.active .tool-icon {
+    color: var(--color-accent);
+}
+
+/* ---- SVG shape styles ---- */
+#shape-layer path {
+    transition: opacity var(--dur-med) var(--ease),
+                stroke var(--dur-med) var(--ease);
+}
+
+#shape-layer path.selected {
+    stroke-dasharray: 6 4;
+    filter: drop-shadow(0 0 3px var(--color-accent));
+    cursor: grab;
+}
+#shape-layer path.selected:active {
+    cursor: grabbing;
+}
+
+/* ---- Selection marquee ---- */
+.marquee-rect {
+    fill: var(--color-accent);
+    fill-opacity: 0.08;
+    stroke: var(--color-accent);
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+    pointer-events: none;
+}
+
+/* ---- Selection bounding box ---- */
+.selection-bbox {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 3;
+    pointer-events: none;
+}
+
+/* ---- Selection action bar ---- */
+.selection-actions {
+    position: absolute;
+    z-index: var(--z-selection);
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-1);
+    display: flex;
+    gap: var(--space-1);
+    transform: translate(-50%, -100%);
+    margin-top: calc(var(--space-4) * -1);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.selection-actions button {
+    background: transparent;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    width: 32px;
+    height: 32px;
+    padding-inline: 0;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text);
+    position: relative;
+    transition: background var(--dur-fast) var(--ease),
+                color var(--dur-fast) var(--ease);
+}
+
+.selection-actions button:hover {
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+}
+
+.selection-actions button.active {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.selection-actions button[data-action="delete"]:hover {
+    background: rgba(255, 68, 68, 0.12);
+    color: var(--color-danger);
+}
+
+/* ---- Template ghost preview ---- */
+.template-ghost path {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* ---- Template panel ---- */
+.template-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: var(--panel-width);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-lg);
+    z-index: var(--z-panel);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform var(--dur-med) var(--ease);
+}
+
+.template-panel.open {
+    transform: translateX(0);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--color-surface-hover);
+}
+
+.panel-title {
+    margin: 0;
+    font-size: var(--fs-lg);
+    font-weight: 700;
+}
+
+.panel-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--dur-fast) var(--ease);
+}
+
+.panel-close:hover {
+    background: var(--color-surface-alt);
+    color: var(--color-text);
+}
+
+.tab-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-4);
+}
+
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+}
+
+.template-tile {
+    position: relative;
+    background: var(--color-surface-alt);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    padding: var(--space-3);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: center;
+    transition: border-color var(--dur-fast) var(--ease),
+                background var(--dur-fast) var(--ease);
+}
+
+.template-tile:hover {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+}
+
+.template-tile svg {
+    width: 100%;
+    height: 100px;
+    display: block;
+}
+
+.template-tile-name {
+    font-size: var(--fs-sm);
+    color: var(--color-text);
+    text-align: center;
+    word-break: break-word;
+    width: 100%;
+}
+
+.template-tile-menu {
+    position: absolute;
+    top: var(--space-1);
+    right: var(--space-1);
+    background: var(--color-surface);
+    border: none;
+    border-radius: var(--radius-sm);
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+}
+
+.template-tile:hover .template-tile-menu {
+    display: flex;
+}
+
+.template-tile-menu:hover {
+    color: var(--color-text);
+    background: var(--color-surface-hover);
+}
+
+.template-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--color-text-subtle);
+    padding: var(--space-6);
+    font-size: var(--fs-sm);
+}
+
+/* Top toolbar of the templates panel: search + import. Sits as a flex sibling
+   above the scrolling tile grid, so it stays visible while tiles scroll. */
+.panel-toolbar {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-surface-hover);
+}
+
+.panel-search {
+    flex: 1;
+    min-width: 0;
+    background: var(--color-surface-alt);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--fs-sm);
+    color: var(--color-text);
+    transition: border-color var(--dur-fast) var(--ease),
+                background var(--dur-fast) var(--ease);
+}
+.panel-search::placeholder {
+    color: var(--color-text-muted);
+}
+.panel-search:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    background: var(--color-surface);
+}
+
+.panel-action-btn {
+    background: var(--color-surface-alt);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--fs-sm);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease),
+                border-color var(--dur-fast) var(--ease);
+}
+
+.panel-action-btn:hover {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+/* Context menu popover for author tiles */
+/* Context menu popover for author tiles.
+   Uses the native Popover API — the browser renders it in the top layer so
+   it can't be clipped by ancestor overflow/transform. JS sets left/top after
+   opening (see positionPopoverNear in panel.js). */
+.tile-context-menu {
+    position: fixed;
+    margin: 0;
+    inset: unset;
+    z-index: var(--z-modal);
+    background: var(--color-surface);
+    border: none;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-1);
+    display: none;
+    flex-direction: column;
+    min-width: 120px;
+}
+
+.tile-context-menu:popover-open {
+    display: flex;
+}
+
+.tile-context-menu button {
+    background: transparent;
+    border: none;
+    padding: var(--space-2) var(--space-3);
+    text-align: left;
+    font-size: var(--fs-sm);
+    color: var(--color-text);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+}
+
+.tile-context-menu button:hover {
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+}
+
+.tile-context-menu button.danger:hover {
+    background: rgba(255, 68, 68, 0.12);
+    color: var(--color-danger);
+}
+
+/* ---- Modal + Export dialog styles live in app-modal.css (shared with
+   the gallery pages). Kept here as a pointer so future readers know
+   where to look. */
+
+/* Disabled state for top-toolbar buttons (used by Export when the canvas
+   is empty). */
+.top-toolbar-btn:disabled,
+.top-toolbar-btn[aria-disabled="true"] {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: var(--color-surface-alt);
+    border-color: transparent;
+    color: var(--color-text);
+}
+.top-toolbar-btn:disabled:hover,
+.top-toolbar-btn[aria-disabled="true"]:hover {
+    background: var(--color-surface-alt);
+    border-color: transparent;
+    color: var(--color-text);
+}
+
+/* ---- Import dialog ---- */
+.import-dialog {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.import-meta {
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+}
+
+.import-thumb {
+    background: #ffffff;
+    border: 1px solid var(--color-surface-hover);
+    border-radius: var(--radius-sm);
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 240px;
+}
+
+.import-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-surface-hover);
+}

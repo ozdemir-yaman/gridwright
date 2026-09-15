@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gridwright &mdash; My Gallery</title>
+    <link rel="stylesheet" href="tokens.css">
+    <link rel="stylesheet" href="landing.css">
+    <link rel="stylesheet" href="app-modal.css">
+    <link rel="stylesheet" href="action-menu.css">
+</head>
+<body>
+    <div class="page">
+        <a class="back-link" href="index.html">&#8592; Back to home</a>
+
+        <!-- Backup banner: warns the user that localStorage is not durable
+             and offers one-click Export / Import of the whole gallery. -->
+        <aside class="gallery-banner" role="note" data-gallery-banner>
+            <div class="gallery-banner-body">
+                <strong class="gallery-banner-title">Back up your gallery</strong>
+                <p class="gallery-banner-text">
+                    Your gallery is stored inside this browser only. Clearing site data,
+                    switching browsers, or private-browsing sessions will erase everything.
+                    Export a backup regularly to keep your drawings safe.
+                </p>
+            </div>
+            <div class="gallery-banner-actions">
+                <button type="button" class="gallery-btn gallery-btn-primary" data-export-gallery>Export gallery</button>
+                <button type="button" class="gallery-btn gallery-btn-secondary" data-import-gallery>Import gallery</button>
+                <input type="file" class="hidden-picker" data-import-input
+                       accept="application/json,.json">
+            </div>
+        </aside>
+
+        <header class="hero">
+            <h1 class="hero-title">My Gallery</h1>
+            <p class="hero-tagline">Drawings you&rsquo;ve saved from the app.</p>
+        </header>
+
+        <main class="gallery-grid" data-gallery-grid></main>
+    </div>
+
+    <!-- App modal (used by src/modal.js and the shared export dialog) -->
+    <div id="app-modal" class="modal-backdrop" hidden>
+        <div class="modal-card" role="dialog" aria-modal="true">
+            <header class="modal-header">
+                <h3 id="modal-title" class="modal-title"></h3>
+            </header>
+            <div class="modal-body">
+                <p id="modal-message" class="modal-message"></p>
+                <div id="modal-content" class="modal-content" hidden></div>
+                <input id="modal-input" class="modal-input" type="text" hidden>
+            </div>
+            <footer class="modal-footer">
+                <button id="modal-cancel" class="modal-btn modal-btn-secondary">Cancel</button>
+                <button id="modal-confirm" class="modal-btn modal-btn-primary">OK</button>
+            </footer>
+        </div>
+    </div>
+
+    <script type="module" src="src/gallery-my.js"></script>
+</body>
+</html>

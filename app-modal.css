@@ -1,0 +1,304 @@
+/* =========================================================================
+   Gridwright — App modal + Export dialog styles (shared)
+   Loaded by app.html and both gallery pages. Consumes tokens.css.
+
+   Provides the classes used by src/modal.js and src/export-modal.js:
+     .modal-backdrop, .modal-card, .modal-card-wide, .modal-header,
+     .modal-title, .modal-body, .modal-message, .modal-content,
+     .autosave-preview*, .modal-input, .modal-footer, .modal-btn,
+     .modal-btn-primary, .modal-btn-secondary,
+     .export-dialog, .export-preview, .export-preview-svg, .export-form,
+     .export-row, .export-row-inline, .export-label, .export-input,
+     .export-size-group, .export-size-inputs, .export-size-x,
+     .export-hint, .export-footer.
+   ========================================================================= */
+
+/* ---- Modal ---- */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: var(--z-modal, 1000);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-5);
+}
+
+.modal-backdrop[hidden] {
+    display: none;
+}
+
+.modal-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Wide variant for dialogs that need side-by-side content (e.g. Export
+   preview + controls). */
+.modal-card-wide {
+    max-width: 780px;
+}
+
+.modal-header {
+    padding: var(--space-5);
+    border-bottom: 1px solid var(--color-surface-hover);
+}
+
+.modal-title {
+    margin: 0;
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--color-text, #222);
+}
+
+.modal-body {
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.modal-message {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--fs-md);
+    line-height: 1.5;
+}
+
+/* Modal content slot — holds caller-supplied DOM (e.g. autosave preview). */
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+/* Autosave preview inside the restore-prompt modal. */
+.autosave-preview {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: stretch;
+}
+.autosave-preview-meta {
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+}
+.autosave-preview-thumb {
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-surface-hover);
+    border-radius: var(--radius-sm);
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.modal-input {
+    width: 100%;
+    padding: var(--space-3);
+    border: 2px solid var(--color-surface-hover);
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-md);
+    font-family: var(--font-sans);
+    color: var(--color-text);
+    background: var(--color-surface);
+    transition: border-color var(--dur-fast) var(--ease),
+                box-shadow var(--dur-fast) var(--ease);
+    box-sizing: border-box;
+}
+
+.modal-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.modal-footer {
+    padding: var(--space-4) var(--space-5);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    background: var(--color-bg);
+}
+
+.modal-btn {
+    padding: var(--space-2) var(--space-4);
+    border-radius: 8px;
+    font-size: var(--fs-md);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition: background var(--dur-fast) var(--ease),
+                border-color var(--dur-fast) var(--ease),
+                color var(--dur-fast) var(--ease),
+                box-shadow var(--dur-fast) var(--ease),
+                transform var(--dur-fast) var(--ease);
+}
+
+/* Primary CTA — indigo/violet gradient with a subtle shadow. Matches the
+   gallery-page primary buttons so all modal CTAs share one visual
+   language. */
+.modal-btn-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3),
+                0 1px 2px rgba(79, 70, 229, 0.2);
+}
+
+.modal-btn-primary:hover,
+.modal-btn-primary:focus-visible {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4),
+                0 2px 4px rgba(79, 70, 229, 0.25);
+    transform: translateY(-1px);
+    outline: none;
+}
+
+.modal-btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(79, 70, 229, 0.25);
+}
+
+/* Secondary: outlined indigo. Quiet at rest, fills on hover. */
+.modal-btn-secondary {
+    background: #ffffff;
+    color: #4338ca;
+    border-color: #c7d2fe;
+    box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+}
+
+.modal-btn-secondary:hover,
+.modal-btn-secondary:focus-visible {
+    background: #eef2ff;
+    border-color: #6366f1;
+    color: #3730a3;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.15);
+    transform: translateY(-1px);
+    outline: none;
+}
+
+/* ---- Export dialog ---- */
+/* Two-column layout: preview on the left, controls on the right. Collapses
+   to stacked on narrow viewports. */
+.export-dialog {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: var(--space-5);
+}
+
+.export-preview {
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-surface-hover);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 260px;
+    max-height: 400px;
+    overflow: hidden;
+}
+.export-preview-svg {
+    display: block;
+    max-width: 100%;
+    max-height: 380px;
+    width: auto;
+    height: auto;
+}
+
+.export-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.export-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+.export-row-inline {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+}
+
+.export-label {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+.export-input {
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-surface);
+    border: 2px solid var(--color-surface-hover);
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-md);
+    color: var(--color-text);
+    transition: border-color var(--dur-fast) var(--ease),
+                box-shadow var(--dur-fast) var(--ease);
+    box-sizing: border-box;
+}
+.export-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+select.export-input {
+    cursor: pointer;
+}
+
+.export-size-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+.export-size-inputs {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+.export-size-inputs .export-input {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+}
+.export-size-x {
+    color: var(--color-text-muted);
+    font-size: var(--fs-md);
+    padding: 0 var(--space-1);
+}
+
+.export-hint {
+    font-size: 11px;
+    color: var(--color-text-muted);
+}
+
+.export-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-surface-hover);
+}
+
+@media (max-width: 640px) {
+    .export-dialog {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

@@ -1,0 +1,115 @@
+/* =========================================================================
+   Gridwright — Action menu (reusable dropdown)
+   Consumes tokens.css. Loaded independently by each page that mounts a
+   menu (see src/action-menu.js for the JS side).
+   ========================================================================= */
+
+.action-menu {
+    /* Positioned by JS via inline `position: fixed; top/right`. */
+    z-index: 1000;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border, #d0d0d0);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    min-width: 240px;
+    max-width: 320px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    animation: action-menu-appear 120ms var(--ease);
+}
+
+@keyframes action-menu-appear {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
+.action-menu-item {
+    /* Each item is a two-line row: bold label, small description. */
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    transition: background var(--dur-fast) var(--ease),
+                color var(--dur-fast) var(--ease),
+                border-color var(--dur-fast) var(--ease);
+}
+
+.action-menu-item:hover,
+.action-menu-item:focus-visible {
+    background: var(--color-accent-soft);
+    outline: none;
+}
+
+.action-menu-item:disabled,
+.action-menu-item[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Icon column: aligned to the top so multi-line items keep the icon
+   visually anchored with the label. */
+.action-menu-icon {
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+}
+
+.action-menu-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Text column: label on top, description below. */
+.action-menu-text {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.action-menu-label {
+    font-size: var(--fs-md);
+    font-weight: 600;
+    line-height: 1.2;
+    color: inherit;
+}
+
+.action-menu-desc {
+    font-size: var(--fs-sm);
+    line-height: 1.35;
+    color: var(--color-text-muted);
+}
+
+/* Danger variant — red label + red icon. On hover the whole row gets a
+   red-tinted background so the destructive intent is obvious. */
+.action-menu-item-danger {
+    color: var(--color-danger);
+}
+
+.action-menu-item-danger .action-menu-label {
+    color: var(--color-danger);
+}
+
+.action-menu-item-danger .action-menu-desc {
+    color: var(--color-danger);
+    opacity: 0.75;
+}
+
+.action-menu-item-danger:hover,
+.action-menu-item-danger:focus-visible {
+    background: rgba(255, 68, 68, 0.1);
+}

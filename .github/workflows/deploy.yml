@@ -1,0 +1,77 @@
+# Build the site with Vite and deploy it to GitHub Pages.
+#
+# How it works
+# ------------
+# Every push to `main` triggers a build. The workflow sets `BASE_PATH` to
+# `/<repo>/` so Vite emits asset URLs that resolve correctly on the
+# project-site subpath (e.g. https://<user>.github.io/<repo>/). The `dist/`
+# directory is then uploaded as a Pages artifact and published.
+#
+# One-time setup on GitHub
+# ------------------------
+# 1. Push this repo to GitHub.
+# 2. Repo → Settings → Pages → Build and deployment → Source: "GitHub Actions".
+# 3. Push a commit to `main`. Watch the run in the Actions tab.
+# 4. The site becomes available at https://<user>.github.io/<repo>/.
+
+name: Deploy to GitHub Pages
+
+on:
+    push:
+        branches: [main]
+    workflow_dispatch:
+
+# Prevent concurrent deploys stepping on each other. In-flight runs
+# for the same ref are cancelled when a new push arrives.
+concurrency:
+    group: pages
+    cancel-in-progress: true
+
+# Least-privilege permissions: read source, write to Pages, mint OIDC tokens.
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Lint
+              run: npm run lint
+
+            - name: Build
+              env:
+                  # `github.event.repository.name` is the repo's short name,
+                  # e.g. "gridwright" for `owner/gridwright`. We wrap it in
+                  # slashes so it becomes a valid Vite `base`.
+                  BASE_PATH: /${{ github.event.repository.name }}/
+              run: npm run build
+
+            - name: Upload Pages artifact
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: dist
+
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4

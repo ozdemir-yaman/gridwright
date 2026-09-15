@@ -1,0 +1,616 @@
+﻿/* =========================================================================
+   Gridwright â€” Landing & Gallery Shared Layout
+   Consumes tokens.css. Used by index.html, gallery-dev.html, gallery-my.html.
+   ========================================================================= */
+
+/* Hidden file inputs used by the backup/import controls. */
+.hidden-picker {
+    display: none;
+}
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-10) var(--space-6);
+    gap: var(--space-10);
+}
+
+/* ---- Hero ---- */
+.hero {
+    text-align: center;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.hero-title {
+    margin: 0;
+    font-size: var(--fs-2xl);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.hero-tagline {
+    margin: 0;
+    font-size: var(--fs-md);
+    color: var(--color-text-muted);
+}
+
+/* ---- Card grid ---- */
+.card-grid {
+    width: 100%;
+    max-width: 960px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-6);
+}
+
+/* ---- Card ---- */
+.card {
+    background: var(--color-surface);
+    border: 2px solid transparent;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-6);
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    transition: transform var(--dur-med) var(--ease),
+                box-shadow var(--dur-med) var(--ease),
+                border-color var(--dur-med) var(--ease);
+}
+
+.card:hover,
+.card:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-accent);
+    outline: none;
+}
+
+.card-icon {
+    font-size: var(--fs-2xl);
+    line-height: 1;
+}
+
+.card-title {
+    margin: 0;
+    font-size: var(--fs-lg);
+    font-weight: 700;
+}
+
+.card-desc {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
+/* ---- Footer ---- */
+.page-footer {
+    margin-top: auto;
+    font-size: var(--fs-sm);
+    color: var(--color-text-subtle);
+}
+
+/* ---- Back link (used on gallery pages) ---- */
+.back-link {
+    align-self: flex-start;
+    font-size: var(--fs-sm);
+    color: var(--color-accent);
+    text-decoration: none;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    transition: background var(--dur-fast) var(--ease);
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+    background: var(--color-accent-soft);
+    outline: none;
+}
+
+/* ---- Coming soon / empty-state placeholder ---- */
+.coming-soon {
+    color: var(--color-text-muted);
+    font-size: var(--fs-md);
+    text-align: center;
+    padding: var(--space-10) var(--space-6);
+    /* When placed inside a multi-column gallery grid, span every column
+       so the message renders as a single centered block instead of
+       being sliced into the columns. */
+    column-span: all;
+    -webkit-column-span: all;
+    /* And avoid the paragraph itself being broken across a column. */
+    break-inside: avoid;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+/* ---- Gallery: masonry-style layout ----
+   Each drawing has its own aspect ratio, so a fixed grid produces awful
+   letterboxing. We use CSS multi-column layout: cards flow top-to-bottom
+   inside each column, and every card is as tall as its natural content
+   demands. `break-inside: avoid` keeps a card whole across a column.
+   Card widths are governed by the column width (`column-width`); the
+   number of columns is derived automatically from the container width.
+*/
+.gallery-grid {
+    width: 100%;
+    max-width: 1200px;
+    column-width: 280px;
+    column-gap: var(--space-6);
+    /* Small negative-margin trick to align rows with visual gap: children
+       set margin-bottom to var(--space-6), so cards feel evenly spaced
+       vertically to match the column gap. */
+}
+
+@media (max-width: 640px) {
+    /* On narrow screens force a single column so cards get more breathing
+       room and thumbnails render at a usable size. */
+    .gallery-grid {
+        column-width: auto;
+        column-count: 1;
+    }
+}
+
+.gallery-card {
+    display: flex;
+    flex-direction: column;
+    /* Positioning context for the 3-dot menu button. */
+    position: relative;
+    background: var(--color-surface);
+    border: 2px solid transparent;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    /* Prevent multi-column layout from splitting a card between columns. */
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: var(--space-6);
+    /* Multi-column layout ignores `transform` on children for reflow
+       calculations, so hover lift works cleanly. */
+    transition: transform var(--dur-med) var(--ease),
+                box-shadow var(--dur-med) var(--ease),
+                border-color var(--dur-med) var(--ease);
+}
+
+.gallery-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-accent);
+}
+
+.gallery-thumb {
+    width: 100%;
+    background: #fafafa;
+    padding: var(--space-3);
+    box-sizing: border-box;
+    /* Keep a small floor so very-wide, very-short drawings still have
+       breathing room, but no ceiling — a card is allowed to be as tall as
+       its drawing's aspect ratio requires. */
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Separator between thumbnail and body — only applied when the card has
+   a body below (My Gallery). Developer's-gallery cards have no body, so
+   the border would otherwise dangle as an orphan line under the drawing. */
+.gallery-card:has(.gallery-body) .gallery-thumb {
+    border-bottom: 1px solid var(--color-border, #e5e5e5);
+}
+
+/* The SVG's height is derived automatically by the browser from its
+   viewBox aspect ratio, given a full-width container. */
+.gallery-thumb-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.gallery-body {
+    padding: var(--space-4) var(--space-4) var(--space-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.gallery-title {
+    margin: 0;
+    font-size: var(--fs-md);
+    font-weight: 700;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+.gallery-meta {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+}
+
+.gallery-actions {
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4) var(--space-4);
+    margin-top: auto;
+    position: relative;
+}
+
+.gallery-btn {
+    flex: 1;
+    padding: 10px 18px;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    /* Keep the label on a single line â€” banner buttons especially were
+       wrapping on words like "Export gallery". */
+    white-space: nowrap;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #4338ca;
+    border-radius: 8px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: background var(--dur-fast) var(--ease),
+                border-color var(--dur-fast) var(--ease),
+                color var(--dur-fast) var(--ease),
+                box-shadow var(--dur-fast) var(--ease),
+                transform var(--dur-fast) var(--ease);
+}
+
+.gallery-btn:hover,
+.gallery-btn:focus-visible {
+    outline: none;
+}
+
+/* Secondary variant â€” outlined indigo, quiet at rest, fills on hover.
+   Used when a paired primary already exists (e.g. Import next to
+   Export in the backup banner, or the Card action rows). */
+.gallery-btn-secondary,
+.gallery-actions .gallery-btn:not(.gallery-btn-primary):not(.gallery-btn-danger) {
+    background: #ffffff;
+    color: #4338ca;
+    border-color: #c7d2fe;
+    box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+}
+
+.gallery-btn-secondary:hover,
+.gallery-btn-secondary:focus-visible,
+.gallery-actions .gallery-btn:not(.gallery-btn-primary):not(.gallery-btn-danger):hover,
+.gallery-actions .gallery-btn:not(.gallery-btn-primary):not(.gallery-btn-danger):focus-visible {
+    background: #eef2ff;
+    border-color: #6366f1;
+    color: #3730a3;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.15);
+    transform: translateY(-1px);
+}
+
+/* Primary CTA â€” indigo gradient with a subtle shadow. Distinct from the
+   raw accent blue used by the drawing tool so gallery buttons look
+   deliberately styled rather than semantic-blue. */
+.gallery-btn-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3),
+                0 1px 2px rgba(79, 70, 229, 0.2);
+}
+
+.gallery-btn-primary:hover,
+.gallery-btn-primary:focus-visible {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4),
+                0 2px 4px rgba(79, 70, 229, 0.25);
+    transform: translateY(-1px);
+}
+
+.gallery-btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(79, 70, 229, 0.25);
+}
+
+/* Danger variant: destructive action (e.g. Delete a saved drawing). Uses
+   the shared danger token; hover fills the background red so intent is
+   unambiguous before the user commits. */
+.gallery-btn-danger {
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+    background: transparent;
+}
+
+.gallery-btn-danger:hover,
+.gallery-btn-danger:focus-visible {
+    background: var(--color-danger);
+    color: #ffffff;
+    border-color: var(--color-danger);
+}
+
+/* ---- Backup banner (top of My Gallery) ----
+   Warns the user that localStorage is not durable and offers one-click
+   whole-gallery export / import. Sits above the hero so it's the first
+   thing the user sees on the page.
+*/
+.gallery-banner {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    background: #fff8e1; /* soft amber */
+    border: 1px solid #f0c000;
+    border-left: 4px solid #f0a000;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    color: #4a3a00;
+}
+
+.gallery-banner-body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.gallery-banner-title {
+    font-size: var(--fs-md);
+    font-weight: 700;
+    color: #7a5b00;
+}
+
+.gallery-banner-text {
+    margin: 0;
+    font-size: var(--fs-sm);
+    line-height: 1.4;
+}
+
+.gallery-banner-actions {
+    flex: 0 0 auto;
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+/* Banner buttons should hug their labels rather than filling the row â€”
+   the `flex: 1` on `.gallery-btn` is intended for the card action row,
+   not the banner. Override here. */
+.gallery-banner-actions .gallery-btn {
+    flex: 0 0 auto;
+}
+
+/* On narrow screens stack the banner vertically so the buttons don't
+   crowd the message. */
+@media (max-width: 640px) {
+    .gallery-banner {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .gallery-banner-actions {
+        justify-content: flex-start;
+    }
+}
+
+/* Export dropdown */
+.gallery-export-wrap {
+    position: relative;
+    flex: 1;
+    display: flex;
+}
+
+.gallery-export-wrap .gallery-btn {
+    flex: 1;
+}
+
+.gallery-export-menu {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    right: 0;
+    min-width: 160px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border, #d0d0d0);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+}
+
+.gallery-export-item {
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--fs-sm);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--color-text, #222);
+    cursor: pointer;
+}
+
+.gallery-export-item:hover,
+.gallery-export-item:focus-visible {
+    background: var(--color-surface-hover, #ececec);
+    outline: none;
+}
+
+/* ---- Gallery page modal ----
+   Self-contained modal for the gallery pages. The app has its own modal
+   system (src/modal.js) that requires specific DOM in app.html â€” the
+   gallery pages don't include that DOM, so this is a lightweight
+   equivalent built ad-hoc by gallery-my.js. Only surfaces when the user
+   imports a backup and needs to pick Merge / Replace.
+*/
+.gallery-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6);
+    z-index: 1000;
+    animation: gallery-modal-fade-in 140ms var(--ease);
+}
+
+@keyframes gallery-modal-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.gallery-modal-card {
+    background: var(--color-surface);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25),
+                0 4px 8px rgba(15, 23, 42, 0.1);
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    animation: gallery-modal-appear 160ms var(--ease);
+}
+
+@keyframes gallery-modal-appear {
+    from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+.gallery-modal-header {
+    padding: var(--space-5) var(--space-6) var(--space-2);
+}
+
+.gallery-modal-title {
+    margin: 0;
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--color-text, #222);
+}
+
+.gallery-modal-body {
+    padding: 0 var(--space-6) var(--space-4);
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    color: var(--color-text-muted, #555);
+}
+
+.gallery-modal-body p {
+    margin: 0 0 var(--space-2);
+}
+
+.gallery-modal-body p:last-child {
+    margin-bottom: 0;
+}
+
+.gallery-modal-body strong {
+    color: var(--color-text, #222);
+}
+
+.gallery-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-6) var(--space-5);
+    flex-wrap: wrap;
+}
+
+/* Stack buttons on narrow viewports. */
+@media (max-width: 480px) {
+    .gallery-modal-footer {
+        flex-direction: column-reverse;
+    }
+    .gallery-modal-footer .gallery-btn {
+        width: 100%;
+    }
+}
+
+
+/* ---- Card 3-dot menu button ----
+   Positioned in the top-right of each card. Hidden by default so cards
+   read as clean thumbnails; revealed on card hover, when the button
+   itself receives focus, or when its menu is open. The `.action-menu-open`
+   class is applied by src/action-menu.js while its dropdown is visible,
+   so the button stays visible after the mouse leaves the card. */
+.gallery-card-menu-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 5;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.92);
+    color: #4338ca;
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+    opacity: 0;
+    transform: translateY(-2px);
+    transition: opacity var(--dur-fast) var(--ease),
+                transform var(--dur-fast) var(--ease),
+                background var(--dur-fast) var(--ease),
+                border-color var(--dur-fast) var(--ease);
+}
+
+.gallery-card:hover .gallery-card-menu-btn,
+.gallery-card:focus-within .gallery-card-menu-btn,
+.gallery-card-menu-btn:focus-visible,
+.gallery-card-menu-btn[aria-expanded="true"] {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.gallery-card-menu-btn:hover,
+.gallery-card-menu-btn:focus-visible {
+    background: #ffffff;
+    border-color: #6366f1;
+    outline: none;
+}
+
+.gallery-card-menu-btn svg {
+    display: block;
+}
+
+/* ---- Modal text input (galleryPrompt) ---- */
+.gallery-modal-input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 6px;
+    font-size: var(--fs-md);
+    line-height: 1.4;
+    border: 1px solid var(--color-border, #d0d0d0);
+    border-radius: 8px;
+    background: var(--color-surface);
+    color: var(--color-text, #222);
+    transition: border-color var(--dur-fast) var(--ease),
+                box-shadow var(--dur-fast) var(--ease);
+    box-sizing: border-box;
+}
+
+.gallery-modal-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* ---- Export format picker (removed) ----
+   The per-template export used to open its own format-picker modal; it now
+   shares the app's full export dialog. Related CSS lives in app-modal.css.
+*/
