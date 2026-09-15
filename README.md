@@ -102,7 +102,7 @@ gridwright/
 ├─ gallery-dev.html      Developer's gallery (bundled drawings).
 ├─ gallery-my.html       User's gallery (localStorage).
 ├─ src/                  All JS modules (see AGENTS.md for details).
-│  └─ dev-drawings-data.json   Bundled example drawings for gallery-dev.
+│  └─ dev-drawings-data.js     Bundled example drawings for gallery-dev.
 ├─ tokens.css            Design tokens (colors, spacing, shadows).
 ├─ style.css             App-only styles.
 ├─ landing.css           Landing + gallery-page styles.

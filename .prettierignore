@@ -1,0 +1,10 @@
+# Auto-generated bundle of example drawings — a single huge JSON blob
+# embedded in an ES module. Reformatting it would either break the JSON
+# or produce a 5000-line diff every time. Edit it by hand or regenerate.
+src/dev-drawings-data.js
+
+# Build output.
+dist/
+
+# Dependencies.
+node_modules/

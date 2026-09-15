@@ -7,11 +7,11 @@
      • Download → opens the same export modal as the app.
      • Rename / Delete → not supported; drawings are read-only.
 
-   The drawings are stored in `src/dev-drawings-data.json` and imported
-   directly at build time (Vite handles JSON imports natively). This is
-   deliberately simple: no `import.meta.glob`, no dynamic directory
-   walking, no filename-collision surprises across build hosts. To add
-   or update a drawing, edit the JSON file directly.
+   The drawings are stored in `src/dev-drawings-data.js` (a plain ES
+   module exporting the template array) and imported at build time.
+   Deliberately simple: no `import.meta.glob`, no runtime JSON fetch,
+   no MIME-type surprises. To add or update a drawing, edit the JS file
+   directly.
    ========================================================================= */
 
 import { isValidTemplate } from './templates.js';
@@ -19,7 +19,7 @@ import { createActionMenu } from './action-menu.js';
 import { galleryAlert } from './gallery-modal.js';
 import { initModal } from './modal.js';
 import { openExportDialog } from './export-modal.js';
-import devDrawings from './dev-drawings-data.json';
+import devDrawings from './dev-drawings-data.js';
 
 // Key used to hand a template over to app.html. See src/main.js for the
 // receiver side.
