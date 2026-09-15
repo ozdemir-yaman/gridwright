@@ -28,7 +28,7 @@ no build-time compilation of your own code, just modules.
 
 ### Prerequisites
 
-- **Node.js 20+** (the CI workflow pins to 20; anything newer works locally).
+- **Node.js 22+** (the CI workflow pins to 22 LTS; 20.19+ also works).
 - **npm** — bundled with Node.
 
 ### Run it locally
