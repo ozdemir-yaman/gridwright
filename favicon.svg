@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Gridwright favicon
+    A 3x3 grid with a diagonal stroke drawn on it — the app's core visual
+    identity: grid-snapped strokes on graph paper. Uses the same indigo
+    (#4f46e5) as the primary CTAs elsewhere in the app. Rendered on a
+    rounded-square white surface so it reads well on both light and dark
+    browser chrome.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <!-- Rounded background so the icon has a strong silhouette against
+         any browser chrome. -->
+    <rect x="0" y="0" width="32" height="32" rx="6" ry="6" fill="#ffffff"/>
+
+    <!-- Grid lines. Light grey, hairline-thin, drawn as a 4x4 division
+         of the 24x24 usable area (padding 4 on each side). -->
+    <g stroke="#d1d5db" stroke-width="1" fill="none" shape-rendering="crispEdges">
+        <!-- Vertical lines -->
+        <line x1="10" y1="4"  x2="10" y2="28"/>
+        <line x1="16" y1="4"  x2="16" y2="28"/>
+        <line x1="22" y1="4"  x2="22" y2="28"/>
+        <!-- Horizontal lines -->
+        <line x1="4"  y1="10" x2="28" y2="10"/>
+        <line x1="4"  y1="16" x2="28" y2="16"/>
+        <line x1="4"  y1="22" x2="28" y2="22"/>
+    </g>
+
+    <!-- Frame around the grid area, slightly darker so the grid has a
+         defined boundary. -->
+    <rect x="4" y="4" width="24" height="24" fill="none"
+          stroke="#9ca3af" stroke-width="1" shape-rendering="crispEdges"/>
+
+    <!-- The drawn stroke: an indigo path that snaps to grid corners.
+         Horizontal from top-left area to the middle, then a 45° diagonal
+         down-right to the bottom-right area. This is the exact shape a
+         user would draw with the app's 8-axis grid-snap constraint. -->
+    <path d="M 4 10 L 16 10 L 28 22"
+          fill="none"
+          stroke="#4f46e5"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+</svg>
