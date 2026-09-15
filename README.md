@@ -28,7 +28,7 @@ no build-time compilation of your own code, just modules.
 
 ### Prerequisites
 
-- **Node.js 20+** (the CI workflow pins to 20; anything newer works locally).
+- **Node.js 22+** (the CI workflow pins to 22 LTS; 20.19+ also works).
 - **npm** — bundled with Node.
 
 ### Run it locally
@@ -101,8 +101,8 @@ gridwright/
 ├─ app.html              The drawing app.
 ├─ gallery-dev.html      Developer's gallery (bundled drawings).
 ├─ gallery-my.html       User's gallery (localStorage).
-├─ drawings/             JSON files bundled into gallery-dev at build time.
 ├─ src/                  All JS modules (see AGENTS.md for details).
+│  └─ dev-drawings-data.json   Bundled example drawings for gallery-dev.
 ├─ tokens.css            Design tokens (colors, spacing, shadows).
 ├─ style.css             App-only styles.
 ├─ landing.css           Landing + gallery-page styles.

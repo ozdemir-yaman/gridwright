@@ -2,17 +2,20 @@
 #
 # How it works
 # ------------
-# Every push to `main` triggers a build. The workflow sets `BASE_PATH` to
-# `/<repo>/` so Vite emits asset URLs that resolve correctly on the
-# project-site subpath (e.g. https://<user>.github.io/<repo>/). The `dist/`
-# directory is then uploaded as a Pages artifact and published.
+# Every push to `main` triggers a build. The `configure-pages` action
+# figures out the correct base path from your Pages settings automatically:
+#   • Project site (owner/repo)         -> /repo/
+#   • User site (owner/owner.github.io) -> /
+#   • Custom domain                     -> /
+# It exposes the base as `steps.pages.outputs.base_path`, which we pass
+# to Vite through BASE_PATH so asset URLs resolve on any of those layouts.
 #
 # One-time setup on GitHub
 # ------------------------
 # 1. Push this repo to GitHub.
-# 2. Repo → Settings → Pages → Build and deployment → Source: "GitHub Actions".
+# 2. Repo -> Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
 # 3. Push a commit to `main`. Watch the run in the Actions tab.
-# 4. The site becomes available at https://<user>.github.io/<repo>/.
+# 4. The site becomes available at the URL printed by the deploy step.
 
 name: Deploy to GitHub Pages
 
@@ -43,8 +46,12 @@ jobs:
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 22
                   cache: npm
+
+            - name: Configure Pages
+              id: pages
+              uses: actions/configure-pages@v5
 
             - name: Install dependencies
               run: npm ci
@@ -54,10 +61,10 @@ jobs:
 
             - name: Build
               env:
-                  # `github.event.repository.name` is the repo's short name,
-                  # e.g. "gridwright" for `owner/gridwright`. We wrap it in
-                  # slashes so it becomes a valid Vite `base`.
-                  BASE_PATH: /${{ github.event.repository.name }}/
+                  # `steps.pages.outputs.base_path` is the correct base for
+                  # this Pages deployment (`/repo/` for project sites, `/`
+                  # for user sites and custom domains).
+                  BASE_PATH: ${{ steps.pages.outputs.base_path }}
               run: npm run build
 
             - name: Upload Pages artifact

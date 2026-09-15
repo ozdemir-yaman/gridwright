@@ -22,6 +22,17 @@ export default [
             ],
         },
     },
+    // Node-scoped globals for build-time config files at the repo root.
+    // vite.config.js reads `process.env.BASE_PATH` for the GitHub Pages
+    // deploy, and eslint.config.js itself runs in Node too.
+    {
+        files: ['vite.config.js', 'eslint.config.js'],
+        languageOptions: {
+            globals: {
+                ...globals.node,
+            },
+        },
+    },
     {
         ignores: ['dist/**', 'node_modules/**'],
     },

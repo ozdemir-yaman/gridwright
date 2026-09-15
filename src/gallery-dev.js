@@ -1,15 +1,17 @@
 /* =========================================================================
    Gridwright — Developer's Gallery page
-   Lists every JSON file in /drawings/ as a card. Each card supports:
-     • Import → hands the template to the app via sessionStorage and
-                redirects to app.html, where the same import-preview modal
-                (Add to current / Replace) fires on boot.
-     • Export → menu with SVG / PNG / JSON options, using the same code
-                paths as the in-app Export modal.
+   Lists a fixed set of bundled example drawings as cards. Each card
+   supports:
+     • Edit on canvas → hands the template to the app via sessionStorage
+                        and redirects to app.html.
+     • Download → opens the same export modal as the app.
+     • Rename / Delete → not supported; drawings are read-only.
 
-   File discovery is compile-time via Vite's `import.meta.glob`. Adding a
-   new .json file into /drawings/ makes it appear in the gallery on the
-   next dev-server reload (HMR triggers) or the next production build.
+   The drawings are stored in `src/dev-drawings-data.json` and imported
+   directly at build time (Vite handles JSON imports natively). This is
+   deliberately simple: no `import.meta.glob`, no dynamic directory
+   walking, no filename-collision surprises across build hosts. To add
+   or update a drawing, edit the JSON file directly.
    ========================================================================= */
 
 import { isValidTemplate } from './templates.js';
@@ -17,57 +19,31 @@ import { createActionMenu } from './action-menu.js';
 import { galleryAlert } from './gallery-modal.js';
 import { initModal } from './modal.js';
 import { openExportDialog } from './export-modal.js';
+import devDrawings from './dev-drawings-data.json';
 
 // Key used to hand a template over to app.html. See src/main.js for the
 // receiver side.
 export const GALLERY_HANDOFF_KEY = 'gridwright.galleryImport.v1';
 
-// ---- File discovery ----
+// ---- Template collection ----
 
-// Vite resolves this glob at build time. `eager: true` means the JSON is
-// bundled directly (no async fetch needed). We import the raw JSON — Vite
-// parses it into a JavaScript object automatically.
-const modules = import.meta.glob('/drawings/*.json', {
-    eager: true,
-    import: 'default',
-});
-
-// Turn the glob's { path: object } map into an ordered list of usable
-// templates. Skips files that don't contain a valid template.
+// Filter to valid templates only (defensive — the bundled JSON is
+// authored, but a validation pass guards against typos and lets the
+// same code handle unexpectedly bad data gracefully).
 function collectDrawings() {
+    if (!devDrawings || !Array.isArray(devDrawings.templates)) return [];
     const items = [];
-    for (const [path, mod] of Object.entries(modules)) {
-        if (!mod || typeof mod !== 'object') continue;
-        if (!Array.isArray(mod.templates) || mod.templates.length === 0) continue;
-        const template = mod.templates.find((t) => isValidTemplate(t));
-        if (!template) continue;
-        // Derive a friendly display name from the filename if the
-        // template's own name is generic ("Untitled drawing" is the
-        // default the export flow produces).
-        const filename = path.split('/').pop() || 'drawing.json';
-        const displayName = deriveDisplayName(template.name, filename);
-        items.push({ template: { ...template, name: displayName }, filename, path });
-    }
-    // Sort alphabetically by display name for a stable, predictable UI.
-    items.sort((a, b) => a.template.name.localeCompare(b.template.name));
+    devDrawings.templates.forEach((template, idx) => {
+        if (!isValidTemplate(template)) return;
+        // Auto-generate a display name from the index if the stored name is
+        // the default "Untitled drawing" placeholder. Same rule the old
+        // filename-based approach used.
+        const displayName = /^untitled/i.test(template.name || '')
+            ? `Example ${idx + 1}`
+            : template.name;
+        items.push({ template: { ...template, name: displayName } });
+    });
     return items;
-}
-
-function deriveDisplayName(templateName, filename) {
-    const base = filename.replace(/\.json$/i, '').replace(/\.gridwright$/i, '');
-    // If the template name is the default placeholder, prefer the filename.
-    if (!templateName || /^untitled/i.test(templateName)) {
-        return prettify(base);
-    }
-    return templateName;
-}
-
-function prettify(str) {
-    return str
-        .replace(/[-_]+/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 // ---- Thumbnail rendering ----
@@ -117,9 +93,9 @@ function handleEditOnCanvas(template) {
 }
 
 // Note: Rename and Delete are intentionally absent from the developer's
-// gallery — those drawings live in the /drawings/ folder on disk and are
-// bundled at build time. Renaming or deleting them here would have no
-// effect (state is regenerated on every page load).
+// gallery — those drawings are bundled into the app at build time and
+// can't be modified from the client. Renaming or deleting them here
+// would have no effect (state is regenerated on every page load).
 async function handleUnsupported(action) {
     await galleryAlert(
         `${action} not available`,
@@ -198,7 +174,7 @@ function init() {
     if (items.length === 0) {
         const empty = document.createElement('p');
         empty.className = 'coming-soon';
-        empty.textContent = 'No drawings found in /drawings/.';
+        empty.textContent = 'No drawings available.';
         grid.appendChild(empty);
         return;
     }

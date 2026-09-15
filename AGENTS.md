@@ -23,7 +23,7 @@ larger than a one-line fix, read this first.
 | ------------------ | --------------------------------------------------------- |
 | `index.html`       | Landing page. Three cards → app + two galleries.          |
 | `app.html`         | The drawing app itself. Loads `src/main.js`.              |
-| `gallery-dev.html` | Developer's gallery — bundled `/drawings/*.json`.         |
+| `gallery-dev.html` | Developer's gallery — bundled example drawings.          |
 | `gallery-my.html`  | My Gallery — user drawings from localStorage.             |
 
 The app is the interesting one. The others are thin.
@@ -143,9 +143,9 @@ Each tool owns its `Down/Move/Up` handlers, wired in `main.js`:
   the user gallery.
 - **`src/gallery-my.js`** — My Gallery page controller. Card
   rendering, per-card actions, backup import/export banner.
-- **`src/gallery-dev.js`** — Developer's Gallery controller.
-  Drawings discovered at build time via
-  `import.meta.glob('/drawings/*.json', { eager: true })`.
+- **`src/gallery-dev.js`** — Developer's Gallery controller. Reads
+  bundled example drawings from `src/dev-drawings-data.json` (a plain
+  JSON import — no filesystem glob).
 
 ### Reusable UI primitives
 
@@ -263,9 +263,12 @@ automatically.
 
 ### Add drawings to the developer's gallery
 
-Drop a Gridwright JSON envelope into `/drawings/`. The glob in
-`src/gallery-dev.js` picks it up on the next dev-server HMR tick or
-production build. No manifest, no wiring.
+Edit `src/dev-drawings-data.json` and append a new template to the
+`templates` array. The shape is the standard Gridwright envelope (see
+"Data shapes" above). Rebuild — Vite bundles the JSON directly into
+`galleryDev-*.js`. There is no filesystem glob; adding a drawing means
+editing that single file, which keeps CI happy and behavior identical
+across build hosts.
 
 ## Testing / verification
 
@@ -291,9 +294,11 @@ CI runs the lint + build steps automatically on every push.
   after clicking "Edit on canvas" won't re-import.
 - **PNG export is capped** at `MAX_PNG_SIDE = 8000` px per side.
   Larger requests are scaled down uniformly.
-- **`import.meta.glob` is a compile-time construct**. Adding files to
-  `/drawings/` at runtime is invisible; the dev server auto-reloads on
-  file changes, but a deployed build has the drawings baked in.
+- **Developer's gallery drawings** are hardcoded in
+  `src/dev-drawings-data.json` and bundled at build time. Adding one
+  means editing that file — there's no runtime discovery, no filesystem
+  glob. This was chosen after `import.meta.glob('/drawings/*.json')`
+  proved fragile on Linux CI when filenames contained special characters.
 - **`:has()` CSS** is used for a few conditional styles
   (`.gallery-card:has(.gallery-body) .gallery-thumb`, etc.). Requires
   reasonably modern browsers (Safari 15.4+, Chrome 105+, Firefox 121+).
